@@ -1,0 +1,97 @@
+$primary: #48A9FE;
+$secondary: #2B2B2B;
+$tertiary: #5f6061;
+$accent: #A7C7E7;
+$background: #121212;
+$text: #E3E3E3;
+
+body {
+  overflow: hidden;
+  text-align: center;
+  background:
+    radial-gradient(
+      600px at top left,
+      rgba($primary, 0.2),
+      transparent 100%
+    ),
+    radial-gradient(
+      600px at bottom right,
+      rgba($primary, 0.2),
+      transparent 100%
+    ),
+    $background;
+
+  background-blend-mode: screen;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+.home {
+  z-index: 1;
+}
+
+.app-menu-button {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: none;
+  border-radius: 10px;
+  position: absolute;
+  top: 2vw;
+  right: min(50px, 5vw);
+  z-index: 10;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  &:hover {
+    transform: scale(1.05);
+    box-shadow:
+      0 0 10px $primary,
+      0 0 20px $accent;
+  }
+}
+
+.dimmer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+
+  &.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+}
+
+.sidebar {
+  position: fixed;
+  display: flex;
+  flex-direction: row;
+  z-index: 50;
+  opacity: 0;
+  right: 0;
+  pointer-events: none;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  width: max(40vw, 400px);
+  height: 100vh;
+  background: $secondary;
+  border-left: 2px solid $tertiary;
+
+  &.visible {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+  }
+}

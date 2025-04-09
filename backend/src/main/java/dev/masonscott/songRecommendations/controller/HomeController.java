@@ -1,18 +1,18 @@
 package dev.masonscott.songRecommendations.controller;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import java.security.Principal;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -29,39 +29,55 @@ public class HomeController {
         return "Hello Home!";
     }
 
-    @GetMapping("/secured")
-    public String secured(@AuthenticationPrincipal OAuth2User principal) {
+
+    @GetMapping("/api/spotify/token")
+    public ResponseEntity<Map<String, Object>> getSpotifyToken(@AuthenticationPrincipal OAuth2User principal) {
+        Map<String, Object> response = new HashMap<>();
+        if (principal == null) {
+            response.put("error", "User not authenticated");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
         OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(
                 "spotify",
                 principal.getName()
         );
-        String accessToken = authorizedClient.getAccessToken().getTokenValue();
-        System.out.println("ACCESS TOKEN: " + accessToken);
-        return "Hello Secured! Token: " + accessToken;
+
+        if (authorizedClient == null) {
+            response.put("error", "No authorized client found.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+        OAuth2AccessToken accessToken = authorizedClient.getAccessToken();
+
+        response.put("access_token", accessToken.getTokenValue());
+        response.put("expires_at", accessToken.getExpiresAt());
+        return ResponseEntity.ok(response);
     }
 
-//    @GetMapping("/me")
-//    public Map<String, Object> getUser(@AuthenticationPrincipal OAuth2User principal) {
-//        return principal.getAttributes();
-//    }
-
-    @GetMapping("/recommend")
-    public String getRecommendations(@AuthenticationPrincipal OAuth2User principal) {
+    @GetMapping("/api/user/stats")
+    public ResponseEntity<Object> getUserStats(@AuthenticationPrincipal OAuth2User principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authenticated");
+        }
         OAuth2AuthorizedClient authorizedClient = authorizedClientService.loadAuthorizedClient(
                 "spotify",
                 principal.getName()
         );
-        String userId = principal.getAttribute("id");
-        String accessToken = authorizedClient.getAccessToken().getTokenValue();
-        String url = "http://127.0.0.1:5000/recommend";
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
+        if (authorizedClient == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No authorized client found");
+        }
+        OAuth2AccessToken accessToken = authorizedClient.getAccessToken();
+        String userId = (String) principal.getAttribute("id");
+        String url = "http://0.0.0.0:5000/get-stats/" + userId;
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-        return response.getBody();
+        try {
+            Map<String, Object> fastAPIResponse = restTemplate.getForObject(url, Map.class);
+            return ResponseEntity.ok(fastAPIResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error calling rec engine: " + e.getMessage());
+        }
     }
 }

@@ -1,0 +1,94 @@
+services:
+  fastapi:
+    build:
+      context: ./fastapi_app
+    container_name: fastapi_app
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - mysql
+    command: python src/main.py
+    volumes:
+      - ./fastapi_app:/app
+    networks:
+      - impulse_net
+
+  spring_app:
+    build: 
+      context: ./backend
+    container_name: spring_app
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - fastapi
+    networks:
+      - impulse_net
+
+  frontend:
+    build: 
+      context: ./frontend
+    container_name: impulse_frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - spring_app
+    networks:
+      - impulse_net
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    networks:
+      - impulse_net
+
+
+  celery_worker:
+    build:
+      context: ./fastapi_app
+    container_name: celery_worker
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - fastapi
+      - mysql
+    command: celery -A src.celery_config worker --loglevel=info --queues song_queue,user_queue
+    networks:
+      - impulse_net
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    networks:
+      - impulse_net
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: always
+
+
+networks:
+  impulse_net:  
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local

@@ -1,0 +1,188 @@
+@use '../../App.scss';
+
+.playback-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-height: 90vh;
+    width: min(70vw, 400px);
+    aspect-ratio: 3 / 4;
+    background: App.$secondary;
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    @keyframes softFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(100px) scale(0.58);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .logo-container {
+        display: flex;
+        justify-content: center;
+        width: auto;
+        height: min(70px, 12vw);
+        margin-top: 10px;
+
+        .spotify-logo {
+            height: 100%;
+            width: auto;
+            opacity: 0.8;
+            margin: 0;
+        }
+    }
+
+    .placeholders{
+        width: 100%;
+        height: 100%;
+        margin-top: auto;
+        justify-self: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-evenly;
+        height: 58vh;
+
+        .placeholder {
+            background-color: App.$tertiary;
+            border-radius: 10px;
+            animation: pulse 2s infinite ease-in-out;
+            height: 18px;
+
+            @keyframes pulse {
+                0%, 100% {
+                  opacity: 0.3;
+                }
+                50% {
+                    opacity: 1;
+                }
+            }              
+        }
+
+        .album-cover-placeholder {
+            @extend .placeholder;
+            border-radius: 4px;
+            width: 80%;
+            aspect-ratio: 1 / 1;
+            height: auto;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .title-placeholder {
+            @extend .placeholder;
+            width: 70%;
+        }
+
+        .artist-placeholder {
+            @extend .placeholder;
+            width: 58%;
+        }
+
+        .album-placeholder {
+            @extend .placeholder;
+            width: 70%;
+        }
+    }
+
+
+    .buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 90%;
+
+        .button {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: auto;
+            margin-bottom: auto;
+            background: none;
+            border: none;
+        }
+
+        .pass-button {
+            @extend .button;
+            width: 120px;
+            height: 120px;
+
+            .pass-icon {
+                height: auto;
+                width: 100%;
+                fill: #fa3976;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
+    
+                &:hover {
+                    transform: scale(1.05);
+                    box-shadow:
+                        0 0 10px App.$primary,
+                        0 0 20px App.$accent;
+                }
+            }
+        }
+
+        .playback-button {
+            @extend .button;
+          
+            .icon {
+                height: 100%;
+                width: auto;
+                color: App.$tertiary;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
+    
+                &:hover {
+                    transform: scale(1.05);
+                    box-shadow:
+                        0 0 10px App.$primary,
+                        0 0 20px App.$accent;
+                }
+            }
+        }
+
+        .like-button {
+            @extend .button;
+            width: 120px;
+            height: 120px;
+
+            .like-icon {
+                height: auto;
+                width: 100%;
+                fill: App.$primary;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                filter: drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4));
+    
+                &:hover {
+                    transform: scale(1.05);
+                    box-shadow:
+                        0 0 10px App.$primary,
+                        0 0 20px App.$accent;
+                }
+            }
+        }
+    }     
+}
+
+.pulse-in {
+    animation: softFadeIn 0.2s ease-out;
+}  
