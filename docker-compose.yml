@@ -81,7 +81,7 @@ services:
     networks:
       - impulse_net
     volumes:
-      - mysql_data:/var/lib/mysql
+      - recommendation-api_mysql_data:/var/lib/mysql
     restart: always
 
 
@@ -90,5 +90,5 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_data:
-    driver: local
+  recommendation-api_mysql_data:
+    external: true
