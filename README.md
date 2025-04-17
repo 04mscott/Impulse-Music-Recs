@@ -6,7 +6,7 @@
 
 ## 🚀 Demo
 
-🎥 **[Watch the Demo Video](https://www.youtube.com/watch?v=CKNp-Hg_AkI&ab_channel=MasonScott)**  
+🎥 **![Watch the Demo Video](https://www.youtube.com/watch?v=CKNp-Hg_AkI&ab_channel=MasonScott)**  
 📌 _Note: This app is still in development. Some features are using hardcoded demo data to simulate final behavior._
 
 ---
